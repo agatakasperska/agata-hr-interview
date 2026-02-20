@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HR Interview Bot</title>
+</head>
+<body>
+  <h2>HR Interview Simulator</h2>
+
+  <div id="chat" style="border:1px solid #ddd; padding:10px; height:360px; overflow:auto;"></div>
+
+  <input id="input" placeholder="Type your answer..." style="width:75%; padding:10px;" />
+  <button onclick="sendMessage()" style="padding:10px;">Send</button>
+
+  <script>
+    const RENDER_BASE_URL = "https://agatakasperska-hr-chatbot.onrender.com";
+
+    function addLine(who, text) {
+      const chat = document.getElementById("chat");
+      const p = document.createElement("p");
+      p.innerHTML = "<b>" + who + ":</b> " + text;
+      chat.appendChild(p);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("input");
+      const message = input.value.trim();
+      if (!message) return;
+      input.value = "";
+      addLine("You", message);
+
+      const res = await fetch(RENDER_BASE_URL + "/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      addLine("HR", data.reply);
+    }
+  </script>
+</body>
+</html>
