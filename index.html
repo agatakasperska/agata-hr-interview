@@ -1,44 +1,376 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HR Interview Bot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Reset and Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0f172a; /* Dark sleek background */
+      overflow: hidden;
+    }
+
+    /* Interactive Background Canvas */
+    #bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* Chat Application Container */
+    .chat-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 450px;
+      height: 80vh;
+      min-height: 500px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .chat-header {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .chat-header span {
+      display: block;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    /* Chat Messages Area */
+    .chat-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: #f8fafc;
+    }
+    
+    /* Scrollbar styling */
+    .chat-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-body::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    /* Message Bubbles */
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hr-message {
+      background: #e2e8f0;
+      color: #1e293b;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .user-message {
+      background: #2563eb;
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* Input Area */
+    .chat-footer {
+      padding: 15px 20px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-footer input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chat-footer input:focus {
+      border-color: #2563eb;
+    }
+
+    .chat-footer button {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chat-footer button:hover {
+      background: #1d4ed8;
+    }
+
+    .typing-indicator {
+      font-size: 0.85rem;
+      color: #64748b;
+      align-self: flex-start;
+      display: none;
+      margin-left: 5px;
+    }
+  </style>
 </head>
 <body>
-  <h2>HR Interview Simulator</h2>
 
-  <div id="chat" style="border:1px solid #ddd; padding:10px; height:360px; overflow:auto;"></div>
+  <canvas id="bg-canvas"></canvas>
 
-  <input id="input" placeholder="Type your answer..." style="width:75%; padding:10px;" />
-  <button onclick="sendMessage()" style="padding:10px;">Send</button>
+  <div class="chat-container">
+    <div class="chat-header">
+      HR Interview Simulator
+      <span>Powered by AI</span>
+    </div>
+
+    <div class="chat-body" id="chat">
+      <div class="message hr-message">Hello! I'm ready to begin the interview. Tell me a bit about yourself.</div>
+    </div>
+    
+    <div class="typing-indicator" id="typing">HR is typing...</div>
+
+    <div class="chat-footer">
+      <input id="input" type="text" placeholder="Type your answer..." autocomplete="off" />
+      <button onclick="sendMessage()" id="send-btn">Send</button>
+    </div>
+  </div>
 
   <script>
     const RENDER_BASE_URL = "https://agatakasperska-hr-chatbot.onrender.com";
 
+    // --- CHAT LOGIC ---
     function addLine(who, text) {
       const chat = document.getElementById("chat");
-      const p = document.createElement("p");
-      p.innerHTML = "<b>" + who + ":</b> " + text;
-      chat.appendChild(p);
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(who === "You" ? "user-message" : "hr-message");
+      msgDiv.innerText = text;
+      chat.appendChild(msgDiv);
       chat.scrollTop = chat.scrollHeight;
     }
 
     async function sendMessage() {
       const input = document.getElementById("input");
+      const button = document.getElementById("send-btn");
+      const typingInfo = document.getElementById("typing");
       const message = input.value.trim();
+      
       if (!message) return;
+      
+      // Update UI for sending
       input.value = "";
+      input.disabled = true;
+      button.disabled = true;
       addLine("You", message);
+      typingInfo.style.display = "block";
 
-      const res = await fetch(RENDER_BASE_URL + "/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
+      try {
+        const res = await fetch(RENDER_BASE_URL + "/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
 
-      const data = await res.json();
-      addLine("HR", data.reply);
+        const data = await res.json();
+        typingInfo.style.display = "none";
+        addLine("HR", data.reply);
+      } catch (error) {
+        typingInfo.style.display = "none";
+        addLine("HR", "Sorry, I am having trouble connecting to the server.");
+      } finally {
+        input.disabled = false;
+        button.disabled = false;
+        input.focus();
+      }
     }
+
+    // Trigger send on Enter key
+    document.getElementById("input").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+
+    // --- CURSOR INTERACTIVE BACKGROUND LOGIC ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    
+    // Set Canvas Size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    // Mouse Interaction
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 150
+    }
+
+    window.addEventListener('mousemove', (event) => {
+      mouse.x = event.x;
+      mouse.y = event.y;
+    });
+
+    window.addEventListener('mouseout', () => {
+      mouse.x = undefined;
+      mouse.y = undefined;
+    });
+
+    // Particle Class
+    class Particle {
+      constructor(x, y, directionX, directionY, size, color) {
+        this.x = x;
+        this.y = y;
+        this.directionX = directionX;
+        this.directionY = directionY;
+        this.size = size;
+        this.color = color;
+      }
+      
+      // Draw particle
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.fillStyle = '#475569';
+        ctx.fill();
+      }
+      
+      // Check boundaries and move
+      update() {
+        if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+        if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+        this.x += this.directionX;
+        this.y += this.directionY;
+        this.draw();
+      }
+    }
+
+    // Initialize particles
+    function initParticles() {
+      particlesArray = [];
+      let numberOfParticles = (canvas.height * canvas.width) / 9000;
+      for (let i = 0; i < numberOfParticles; i++) {
+        let size = (Math.random() * 2) + 1;
+        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+        let directionX = (Math.random() * 1) - 0.5;
+        let directionY = (Math.random() * 1) - 0.5;
+        let color = '#475569';
+        particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+      }
+    }
+
+    // Connect lines between particles and mouse
+    function connect() {
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+            + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+          
+          if (distance < (canvas.width/7) * (canvas.height/7)) {
+            let opacityValue = 1 - (distance/20000);
+            ctx.strokeStyle = 'rgba(71, 85, 105,' + opacityValue + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+        
+        // Mouse interaction lines
+        if (mouse.x != undefined && mouse.y != undefined) {
+          let dx = mouse.x - particlesArray[a].x;
+          let dy = mouse.y - particlesArray[a].y;
+          let mouseDistance = dx * dx + dy * dy;
+          if (mouseDistance < mouse.radius * mouse.radius) {
+             let mouseOpacity = 1 - (mouseDistance / (mouse.radius * mouse.radius));
+             ctx.strokeStyle = 'rgba(59, 130, 246,' + mouseOpacity + ')';
+             ctx.lineWidth = 1.5;
+             ctx.beginPath();
+             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+             ctx.lineTo(mouse.x, mouse.y);
+             ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+      }
+      connect();
+    }
+
+    initParticles();
+    animate();
   </script>
 </body>
 </html>
