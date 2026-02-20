@@ -18,8 +18,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #0f172a; /* Dark sleek background */
+      background-color: #0f172a;
       overflow: hidden;
+      color: #1e293b;
     }
 
     /* Interactive Background Canvas */
@@ -32,14 +33,76 @@
       z-index: 0;
     }
 
-    /* Chat Application Container */
-    .chat-container {
+    /* Main Layout Wrapper */
+    .main-wrapper {
       position: relative;
       z-index: 1;
-      width: 100%;
-      max-width: 450px;
+      display: flex;
+      gap: 20px;
+      width: 90%;
+      max-width: 900px;
       height: 80vh;
       min-height: 500px;
+    }
+
+    /* Sidebar for Examples & Notice */
+    .sidebar {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar h3 {
+      font-size: 1.2rem;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .notice-box {
+      background: #fffbeb;
+      color: #b45309;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      line-height: 1.4;
+    }
+
+    .example-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .example-list li {
+      background: #f1f5f9;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .example-list li:hover {
+      background: #e0e7ff;
+      border-color: #a5b4fc;
+      color: #3730a3;
+      transform: translateX(5px);
+    }
+
+    /* Chat Application Container */
+    .chat-container {
+      flex: 1.5;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       border-radius: 16px;
@@ -79,11 +142,10 @@
       background: #f8fafc;
     }
     
-    /* Scrollbar styling */
-    .chat-body::-webkit-scrollbar {
+    .chat-body::-webkit-scrollbar, .sidebar::-webkit-scrollbar {
       width: 6px;
     }
-    .chat-body::-webkit-scrollbar-thumb {
+    .chat-body::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb {
       background-color: #cbd5e1;
       border-radius: 10px;
     }
@@ -165,32 +227,75 @@
       display: none;
       margin-left: 5px;
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-wrapper {
+        flex-direction: column;
+        height: 95vh;
+        gap: 10px;
+      }
+      .sidebar {
+        flex: none;
+        height: 250px;
+      }
+      .chat-container {
+        flex: 1;
+      }
+    }
   </style>
 </head>
 <body>
 
   <canvas id="bg-canvas"></canvas>
 
-  <div class="chat-container">
-    <div class="chat-header">
-      HR Interview Simulator
-      <span>Powered by AI</span>
-    </div>
-
-    <div class="chat-body" id="chat">
-      <div class="message hr-message">Hello! I'm ready to begin the interview. Tell me a bit about yourself.</div>
-    </div>
+  <div class="main-wrapper">
     
-    <div class="typing-indicator" id="typing">HR is typing...</div>
+    <div class="sidebar">
+      <h3>Interview Helper</h3>
+      
+      <div class="notice-box">
+        <strong>Notice:</strong> Please wait 30-35 seconds for the first reply while the server starts up.
+      </div>
 
-    <div class="chat-footer">
-      <input id="input" type="text" placeholder="Type your answer..." autocomplete="off" />
-      <button onclick="sendMessage()" id="send-btn">Send</button>
+      <p style="font-size: 0.9rem; color: #64748b;">Click a question to copy it to the chat:</p>
+      <ul class="example-list">
+        <li onclick="fillInput(this.innerText)">What are your key skills?</li>
+        <li onclick="fillInput(this.innerText)">How do you cope with timing?</li>
+        <li onclick="fillInput(this.innerText)">What would you do if you have the same deadline for two different tasks?</li>
+        <li onclick="fillInput(this.innerText)">Can you describe a time you overcame a difficult challenge at work?</li>
+        <li onclick="fillInput(this.innerText)">Why do you want to work for our company?</li>
+      </ul>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-header">
+        HR Interview Simulator
+        <span>Powered by AI</span>
+      </div>
+
+      <div class="chat-body" id="chat">
+        <div class="message hr-message">Hello! I'm ready to begin the interview. Tell me a bit about yourself.</div>
+      </div>
+      
+      <div class="typing-indicator" id="typing">HR is typing...</div>
+
+      <div class="chat-footer">
+        <input id="input" type="text" placeholder="Type your answer..." autocomplete="off" />
+        <button onclick="sendMessage()" id="send-btn">Send</button>
+      </div>
     </div>
   </div>
 
   <script>
     const RENDER_BASE_URL = "https://agatakasperska-hr-chatbot.onrender.com";
+
+    // --- UI HELPERS ---
+    function fillInput(text) {
+      const input = document.getElementById("input");
+      input.value = text;
+      input.focus();
+    }
 
     // --- CHAT LOGIC ---
     function addLine(who, text) {
@@ -245,7 +350,6 @@
         sendMessage();
       }
     });
-
 
     // --- CURSOR INTERACTIVE BACKGROUND LOGIC ---
     const canvas = document.getElementById('bg-canvas');
