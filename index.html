@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask HR Assistant - Agata Kasperska</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* Reset & Base */
     * {
@@ -14,33 +14,56 @@
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #050A1F; /* Deep dark blue main background */
-      color: #ffffff;
+      background-color: #020617; /* Very deep background */
+      color: #f8fafc;
       height: 100vh;
       display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
     }
 
-    /* Layout Wrapper */
-    .app-container {
-      display: flex;
+    /* Interactive Background Canvas */
+    #bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
+    }
+
+    /* Layout Wrapper (Floating Glassmorphism Container) */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 90%;
+      max-width: 1100px;
+      height: 85vh;
+      min-height: 600px;
+      background: rgba(30, 41, 59, 0.75); /* Translucent slate */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* --- SIDEBAR --- */
     .sidebar {
       width: 320px;
-      background-color: #0A133A; /* Slightly lighter navy */
-      border-right: 4px solid #6b7280; /* Gray divider */
+      background-color: rgba(15, 23, 42, 0.85); /* Darker sidebar */
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
     }
 
     /* Profile Section */
     .profile-section {
-      padding: 30px 20px;
-      border-bottom: 4px solid #6b7280;
+      padding: 30px 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
       gap: 15px;
@@ -53,73 +76,79 @@
     }
 
     .profile-pic {
-      width: 90px;
-      height: 90px;
-      background-color: #ffffff;
+      width: 80px;
+      height: 80px;
+      background-color: #e2e8f0;
       border-radius: 50%;
       flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      /* Add your image URL here later: */
+      /* background-image: url('your-photo.jpg'); */
+      /* background-size: cover; */
     }
 
     .profile-name {
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       font-weight: 700;
       text-transform: uppercase;
       line-height: 1.2;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
     }
 
     .status {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
       gap: 8px;
       font-size: 0.85rem;
-      color: #e2e8f0;
-      margin-top: 10px;
+      color: #94a3b8;
+      margin-top: 5px;
     }
 
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background-color: #10b981; /* Emerald green */
       border-radius: 50%;
-      box-shadow: 0 0 5px #10b981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
     }
 
     /* Quick Questions Section */
     .questions-section {
-      padding: 30px 20px;
+      padding: 25px;
       flex: 1;
       overflow-y: auto;
     }
 
     .questions-section h3 {
-      font-size: 0.9rem;
-      font-weight: 400;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 20px;
-      color: #cbd5e1;
+      color: #64748b;
     }
 
     .oval-btn {
       width: 100%;
-      background-color: #3B4CCA;
-      color: white;
-      border: none;
-      padding: 15px 20px;
-      border-radius: 50px; /* Pill/Oval shape */
-      margin-bottom: 15px;
-      font-size: 0.9rem;
+      background-color: rgba(51, 65, 85, 0.5);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 20px;
+      border-radius: 30px; 
+      margin-bottom: 12px;
+      font-size: 0.85rem;
       cursor: pointer;
-      text-align: center;
-      transition: background-color 0.2s, transform 0.1s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      text-align: left;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
     }
 
     .oval-btn:hover {
-      background-color: #4F61E5;
-      transform: scale(1.02);
+      background-color: #6366f1; /* Indigo accent */
+      border-color: #6366f1;
+      color: #ffffff;
+      transform: translateX(5px);
     }
 
     /* --- MAIN CHAT AREA --- */
@@ -127,112 +156,122 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 20px 30px;
+      padding: 25px 35px;
     }
 
     /* Top Header */
     .header-bar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding-bottom: 20px;
-      border-bottom: 1px solid #1e293b;
     }
 
     .header-left h1 {
       font-size: 1.5rem;
       font-weight: 700;
+      color: #f8fafc;
     }
     
     .header-left p {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #94a3b8;
       margin-top: 5px;
     }
 
     .header-middle {
       display: flex;
-      gap: 15px;
+      gap: 12px;
     }
 
     .nav-btn {
-      background-color: #3B4CCA;
-      color: white;
-      border: 2px solid #6b7280;
-      padding: 10px 25px;
-      font-size: 0.9rem;
+      background-color: transparent;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.2s;
     }
 
     .nav-btn:hover {
-      background-color: #4F61E5;
-      border-color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
     }
 
     .header-right .wait-pill {
-      border: 1px solid #475569;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       padding: 6px 15px;
       border-radius: 20px;
       font-size: 0.8rem;
-      color: #cbd5e1;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Chat Window */
     .chat-window {
       flex: 1;
-      background-color: #0F1626; /* Darker box for chat */
-      border-radius: 12px;
-      margin: 20px 0;
-      padding: 20px;
+      background-color: rgba(15, 23, 42, 0.5); /* Inset dark box */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      margin: 15px 0 20px 0;
+      padding: 25px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      gap: 18px;
     }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
     /* Messages */
     .message {
-      max-width: 80%;
-      padding: 12px 18px;
-      border-radius: 12px;
+      max-width: 75%;
+      padding: 14px 18px;
+      border-radius: 14px;
       font-size: 0.95rem;
-      line-height: 1.4;
+      line-height: 1.5;
       animation: fadeIn 0.3s ease;
     }
     
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .hr-message {
-      background: #1e293b;
+      background: #334155;
       color: #f8fafc;
       align-self: flex-start;
       border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
     .user-message {
-      background: #3B4CCA;
+      background: #6366f1; /* Indigo */
       color: #ffffff;
       align-self: flex-end;
       border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
     }
     
     .typing-indicator {
       font-size: 0.85rem;
-      color: #64748b;
+      color: #94a3b8;
       align-self: flex-start;
       display: none;
       margin-left: 5px;
+      font-style: italic;
     }
 
     /* Input Area */
@@ -244,20 +283,25 @@
 
     .input-wrapper {
       flex: 1;
-      background-color: transparent;
-      border: 1px solid #475569;
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 30px;
-      padding: 5px 20px;
+      padding: 8px 25px;
       display: flex;
       align-items: center;
+      transition: border-color 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #6366f1;
     }
 
     .input-wrapper input {
       width: 100%;
       background: transparent;
       border: none;
-      color: white;
-      padding: 10px 0;
+      color: #f8fafc;
+      padding: 8px 0;
       font-size: 0.95rem;
       outline: none;
       font-family: 'Inter', sans-serif;
@@ -268,28 +312,53 @@
     }
 
     .send-btn {
-      background-color: #3b82f6;
+      background-color: #6366f1;
       color: white;
       border: none;
       border-radius: 30px;
-      padding: 12px 30px;
-      font-size: 1rem;
+      padding: 14px 30px;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
 
     .send-btn:hover {
-      background-color: #2563eb;
+      background-color: #4f46e5;
+      transform: translateY(-1px);
     }
     
     .send-btn:disabled {
       background-color: #475569;
+      color: #94a3b8;
       cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 850px) {
+      .app-container {
+        flex-direction: column;
+        height: 95vh;
+      }
+      .sidebar {
+        width: 100%;
+        height: 250px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .header-bar {
+        flex-direction: column;
+        gap: 15px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <canvas id="bg-canvas"></canvas>
 
   <div class="app-container">
     
@@ -307,11 +376,11 @@
 
       <div class="questions-section">
         <h3>Quick HR questions</h3>
-        <button class="oval-btn" onclick="fillInput('What are your key skills?')">What are your key skills?</button>
-        <button class="oval-btn" onclick="fillInput('How do you cope with timing?')">How do you cope with timing?</button>
-        <button class="oval-btn" onclick="fillInput('How do you handle multiple deadlines?')">How do you handle multiple deadlines?</button>
-        <button class="oval-btn" onclick="fillInput('Describe a challenge you overcame.')">Describe a challenge you overcame.</button>
-        <button class="oval-btn" onclick="fillInput('Why do you want to work here?')">Why do you want to work here?</button>
+        <button class="oval-btn" onclick="sendMessage('What are your key skills?')">What are your key skills?</button>
+        <button class="oval-btn" onclick="sendMessage('How do you cope with timing?')">How do you cope with timing?</button>
+        <button class="oval-btn" onclick="sendMessage('How do you handle multiple deadlines?')">How do you handle multiple deadlines?</button>
+        <button class="oval-btn" onclick="sendMessage('Describe a challenge you overcame.')">Describe a challenge you overcame.</button>
+        <button class="oval-btn" onclick="sendMessage('Why do you want to work here?')">Why do you want to work here?</button>
       </div>
     </aside>
 
@@ -320,16 +389,18 @@
       <header class="header-bar">
         <div class="header-left">
           <h1>Ask HR Assistant</h1>
-          <p>Type below or click a topic.</p>
+          <p>Type below or click a topic on the left.</p>
         </div>
         
         <div class="header-middle">
-          <a href="#" class="nav-btn">My works</a>
-          <a href="#" class="nav-btn">Linkedin</a>
+          <a href="#" class="nav-btn">My Works</a>
+          <a href="#" class="nav-btn">LinkedIn</a>
         </div>
 
         <div class="header-right">
-          <div class="wait-pill">Wait ~30s for reply</div>
+          <div class="wait-pill">
+             <span style="font-size: 12px;">⏳</span> Wait ~30s for reply
+          </div>
         </div>
       </header>
 
@@ -337,11 +408,11 @@
         <div class="message hr-message">Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.</div>
       </div>
       
-      <div class="typing-indicator" id="typing">HR is typing...</div>
+      <div class="typing-indicator" id="typing">typing...</div>
 
       <div class="input-area">
         <div class="input-wrapper">
-          <input id="input" type="text" placeholder="Ask a question...(Why are you interested with this job ?, etc.)" autocomplete="off" />
+          <input id="input" type="text" placeholder="Ask a question... (Why are you interested in this job?, etc.)" autocomplete="off" />
         </div>
         <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
       </div>
@@ -353,12 +424,6 @@
     const RENDER_BASE_URL = "https://agatakasperska-hr-chatbot.onrender.com";
 
     // --- UI HELPERS ---
-    function fillInput(text) {
-      const input = document.getElementById("input");
-      input.value = text;
-      input.focus();
-    }
-
     function addLine(who, text) {
       const chat = document.getElementById("chat");
       const msgDiv = document.createElement("div");
@@ -370,22 +435,23 @@
     }
 
     // --- CHAT LOGIC ---
-    async function sendMessage() {
+    // Modified to accept optional quickText parameter from the buttons
+    async function sendMessage(quickText = null) {
       const input = document.getElementById("input");
       const button = document.getElementById("send-btn");
       const typingInfo = document.getElementById("typing");
-      const message = input.value.trim();
+      
+      // If a quickText was provided (from a button click), use that. Otherwise, read the input box.
+      const message = quickText ? quickText : input.value.trim();
       
       if (!message) return;
       
-      // Update UI for sending state
       input.value = "";
       input.disabled = true;
       button.disabled = true;
       addLine("You", message);
       typingInfo.style.display = "block";
       
-      // Scroll to bottom after adding typing indicator
       const chat = document.getElementById("chat");
       chat.scrollTop = chat.scrollHeight;
 
@@ -409,13 +475,132 @@
       }
     }
 
-    // Trigger send on Enter key
     document.getElementById("input").addEventListener("keypress", function(event) {
       if (event.key === "Enter") {
         event.preventDefault();
         sendMessage();
       }
     });
+
+    // --- CURSOR INTERACTIVE BACKGROUND LOGIC ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 150
+    }
+
+    window.addEventListener('mousemove', (event) => {
+      mouse.x = event.x;
+      mouse.y = event.y;
+    });
+
+    window.addEventListener('mouseout', () => {
+      mouse.x = undefined;
+      mouse.y = undefined;
+    });
+
+    class Particle {
+      constructor(x, y, directionX, directionY, size, color) {
+        this.x = x;
+        this.y = y;
+        this.directionX = directionX;
+        this.directionY = directionY;
+        this.size = size;
+        this.color = color;
+      }
+      
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+      
+      update() {
+        if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+        if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+        this.x += this.directionX;
+        this.y += this.directionY;
+        this.draw();
+      }
+    }
+
+    function initParticles() {
+      particlesArray = [];
+      let numberOfParticles = (canvas.height * canvas.width) / 9000;
+      for (let i = 0; i < numberOfParticles; i++) {
+        let size = (Math.random() * 2) + 1;
+        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+        let directionX = (Math.random() * 1) - 0.5;
+        let directionY = (Math.random() * 1) - 0.5;
+        // Dark slate color for particles to match theme
+        let color = '#334155'; 
+        particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+      }
+    }
+
+    function connect() {
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+            + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+          
+          if (distance < (canvas.width/7) * (canvas.height/7)) {
+            let opacityValue = 1 - (distance/20000);
+            // Subtle gray connecting lines
+            ctx.strokeStyle = 'rgba(51, 65, 85,' + opacityValue + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+        
+        // Mouse interaction lines
+        if (mouse.x != undefined && mouse.y != undefined) {
+          let dx = mouse.x - particlesArray[a].x;
+          let dy = mouse.y - particlesArray[a].y;
+          let mouseDistance = dx * dx + dy * dy;
+          if (mouseDistance < mouse.radius * mouse.radius) {
+             let mouseOpacity = 1 - (mouseDistance / (mouse.radius * mouse.radius));
+             ctx.strokeStyle = 'rgba(99, 102, 241,' + mouseOpacity + ')'; // Indigo interaction lines
+             ctx.lineWidth = 1.5;
+             ctx.beginPath();
+             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+             ctx.lineTo(mouse.x, mouse.y);
+             ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+      }
+      connect();
+    }
+
+    initParticles();
+    animate();
   </script>
 </body>
 </html>
