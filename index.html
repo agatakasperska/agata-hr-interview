@@ -14,7 +14,7 @@
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #020617; /* Very deep background */
+      background-color: #020617;
       color: #f8fafc;
       height: 100vh;
       display: flex;
@@ -23,7 +23,6 @@
       overflow: hidden;
     }
 
-    /* Interactive Background Canvas */
     #bg-canvas {
       position: absolute;
       top: 0;
@@ -33,7 +32,6 @@
       z-index: 0;
     }
 
-    /* Layout Wrapper (Floating Glassmorphism Container) */
     .app-container {
       position: relative;
       z-index: 1;
@@ -42,7 +40,7 @@
       max-width: 1100px;
       height: 85vh;
       min-height: 600px;
-      background: rgba(30, 41, 59, 0.75); /* Translucent slate */
+      background: rgba(30, 41, 59, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 20px;
@@ -54,13 +52,12 @@
     /* --- SIDEBAR --- */
     .sidebar {
       width: 320px;
-      background-color: rgba(15, 23, 42, 0.85); /* Darker sidebar */
+      background-color: rgba(15, 23, 42, 0.85);
       border-right: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       flex-direction: column;
     }
 
-    /* Profile Section */
     .profile-section {
       padding: 30px 25px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -82,12 +79,8 @@
       border-radius: 50%;
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      
-      /* Updated to point directly to the image in the same folder */
       background-image: url('Profile.jpg'); 
-      
       background-size: cover;
-      /* This centers the image nicely on your face */
       background-position: center 15%; 
     }
 
@@ -112,12 +105,11 @@
     .status-dot {
       width: 8px;
       height: 8px;
-      background-color: #10b981; /* Emerald green */
+      background-color: #10b981;
       border-radius: 50%;
       box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
     }
 
-    /* Quick Questions Section */
     .questions-section {
       padding: 25px;
       flex: 1;
@@ -149,7 +141,7 @@
     }
 
     .oval-btn:hover {
-      background-color: #6366f1; /* Indigo accent */
+      background-color: #6366f1;
       border-color: #6366f1;
       color: #ffffff;
       transform: translateX(5px);
@@ -163,7 +155,6 @@
       padding: 25px 35px;
     }
 
-    /* Top Header */
     .header-bar {
       display: flex;
       justify-content: space-between;
@@ -186,6 +177,7 @@
     .header-middle {
       display: flex;
       gap: 12px;
+      align-items: center;
     }
 
     .nav-btn {
@@ -206,6 +198,23 @@
       color: #ffffff;
     }
 
+    /* Language Toggle Button */
+    .lang-btn {
+      background-color: #6366f1;
+      color: #ffffff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .lang-btn:hover {
+      background-color: #4f46e5;
+    }
+
     .header-right .wait-pill {
       background: rgba(245, 158, 11, 0.1);
       border: 1px solid rgba(245, 158, 11, 0.3);
@@ -218,10 +227,9 @@
       gap: 6px;
     }
 
-    /* Chat Window */
     .chat-window {
       flex: 1;
-      background-color: rgba(15, 23, 42, 0.5); /* Inset dark box */
+      background-color: rgba(15, 23, 42, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 16px;
       margin: 15px 0 20px 0;
@@ -232,13 +240,11 @@
       gap: 18px;
     }
 
-    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-    /* Messages */
     .message {
       max-width: 75%;
       padding: 14px 18px;
@@ -262,7 +268,7 @@
     }
 
     .user-message {
-      background: #6366f1; /* Indigo */
+      background: #6366f1;
       color: #ffffff;
       align-self: flex-end;
       border-bottom-right-radius: 4px;
@@ -278,7 +284,6 @@
       font-style: italic;
     }
 
-    /* Input Area */
     .input-area {
       display: flex;
       gap: 15px;
@@ -341,7 +346,6 @@
       transform: none;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 850px) {
       .app-container {
         flex-direction: column;
@@ -374,42 +378,42 @@
         </div>
         <div class="status">
           <div class="status-dot"></div>
-          Available for internships
+          <span id="txt-status">Available for internships</span>
         </div>
       </div>
 
       <div class="questions-section">
-        <h3>Quick HR questions</h3>
-        <button class="oval-btn" onclick="sendMessage('What are your key skills?')">What are your key skills?</button>
-        <button class="oval-btn" onclick="sendMessage('How do you cope with timing?')">How do you cope with timing?</button>
-        <button class="oval-btn" onclick="sendMessage('How do you handle multiple deadlines?')">How do you handle multiple deadlines?</button>
-        <button class="oval-btn" onclick="sendMessage('Describe a challenge you overcame.')">Describe a challenge you overcame.</button>
-        <button class="oval-btn" onclick="sendMessage('Why do you want to work here?')">Why do you want to work here?</button>
+        <h3 id="txt-quick">Quick HR questions</h3>
+        <button class="oval-btn" id="btn-q1" onclick="sendQuickMessage('q1')">What are your key skills?</button>
+        <button class="oval-btn" id="btn-q2" onclick="sendQuickMessage('q2')">How do you cope with timing?</button>
+        <button class="oval-btn" id="btn-q3" onclick="sendQuickMessage('q3')">How do you handle multiple deadlines?</button>
+        <button class="oval-btn" id="btn-q4" onclick="sendQuickMessage('q4')">Describe a challenge you overcame.</button>
+        <button class="oval-btn" id="btn-q5" onclick="sendQuickMessage('q5')">Why do you want to work here?</button>
       </div>
     </aside>
 
     <main class="main-area">
-      
       <header class="header-bar">
         <div class="header-left">
-          <h1>Ask HR Assistant</h1>
-          <p>Type below or click a topic on the left.</p>
+          <h1 id="txt-title">Ask HR Assistant</h1>
+          <p id="txt-subtitle">Type below or click a topic on the left.</p>
         </div>
         
         <div class="header-middle">
-          <a href="#" class="nav-btn">My Works</a>
+          <a href="#" class="nav-btn" id="txt-works">My Works</a>
           <a href="https://www.linkedin.com/in/agata-kasperska-38374b2a8/" target="_blank" rel="noopener noreferrer" class="nav-btn">LinkedIn</a>
+          <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">PL</button>
         </div>
 
         <div class="header-right">
           <div class="wait-pill">
-             <span style="font-size: 12px;">⏳</span> Wait ~30s for reply
+             <span style="font-size: 12px;">⏳</span> <span id="txt-wait">Wait ~30s for reply</span>
           </div>
         </div>
       </header>
 
       <div class="chat-window" id="chat">
-        <div class="message hr-message">Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.</div>
+        <div class="message hr-message" id="txt-welcome">Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.</div>
       </div>
       
       <div class="typing-indicator" id="typing">typing...</div>
@@ -418,7 +422,7 @@
         <div class="input-wrapper">
           <input id="input" type="text" placeholder="Ask a question... (Why are you interested in this job?, etc.)" autocomplete="off" />
         </div>
-        <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()"><span id="txt-send">Send</span></button>
       </div>
 
     </main>
@@ -427,25 +431,98 @@
   <script>
     const RENDER_BASE_URL = "https://agatakasperska-hr-chatbot.onrender.com";
 
+    // --- LANGUAGE DICTIONARY ---
+    let currentLang = 'en';
+
+    const translations = {
+      en: {
+        status: "Available for internships",
+        quick: "Quick HR questions",
+        q1: "What are your key skills?",
+        q2: "How do you cope with timing?",
+        q3: "How do you handle multiple deadlines?",
+        q4: "Describe a challenge you overcame.",
+        q5: "Why do you want to work here?",
+        title: "Ask HR Assistant",
+        subtitle: "Type below or click a topic on the left.",
+        works: "My Works",
+        wait: "Wait ~30s for reply",
+        welcome: "Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.",
+        typing: "typing...",
+        placeholder: "Ask a question... (Why are you interested in this job?, etc.)",
+        send: "Send",
+        error: "Sorry, I am having trouble connecting to the server. Please try again in a moment.",
+        you: "You",
+        hr: "HR"
+      },
+      pl: {
+        status: "Dostępna na staże",
+        quick: "Szybkie pytania HR",
+        q1: "Jakie są twoje kluczowe umiejętności?",
+        q2: "Jak radzisz sobie z czasem?",
+        q3: "Jak radzisz sobie z wieloma terminami?",
+        q4: "Opisz wyzwanie, które pokonałaś.",
+        q5: "Dlaczego chcesz tu pracować?",
+        title: "Asystent HR AI",
+        subtitle: "Wpisz poniżej lub kliknij temat po lewej.",
+        works: "Moje prace",
+        wait: "Czekaj ~30s na odpowiedź",
+        welcome: "Cześć! Jestem asystentem HR AI Agaty. Śmiało zadawaj mi pytania o jej kwalifikacje lub wybierz jedno z listy po lewej.",
+        typing: "pisze...",
+        placeholder: "Zadaj pytanie... (Dlaczego interesuje Cię ta praca?, itp.)",
+        send: "Wyślij",
+        error: "Przepraszam, mam problem z połączeniem z serwerem. Spróbuj ponownie za chwilę.",
+        you: "Ty",
+        hr: "HR"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'pl' : 'en';
+      
+      // Update toggle button text
+      document.getElementById("lang-toggle").innerText = currentLang === 'en' ? 'PL' : 'EN';
+      
+      // Update UI texts
+      document.getElementById("txt-status").innerText = translations[currentLang].status;
+      document.getElementById("txt-quick").innerText = translations[currentLang].quick;
+      document.getElementById("btn-q1").innerText = translations[currentLang].q1;
+      document.getElementById("btn-q2").innerText = translations[currentLang].q2;
+      document.getElementById("btn-q3").innerText = translations[currentLang].q3;
+      document.getElementById("btn-q4").innerText = translations[currentLang].q4;
+      document.getElementById("btn-q5").innerText = translations[currentLang].q5;
+      document.getElementById("txt-title").innerText = translations[currentLang].title;
+      document.getElementById("txt-subtitle").innerText = translations[currentLang].subtitle;
+      document.getElementById("txt-works").innerText = translations[currentLang].works;
+      document.getElementById("txt-wait").innerText = translations[currentLang].wait;
+      document.getElementById("txt-welcome").innerText = translations[currentLang].welcome;
+      document.getElementById("typing").innerText = translations[currentLang].typing;
+      document.getElementById("input").placeholder = translations[currentLang].placeholder;
+      document.getElementById("txt-send").innerText = translations[currentLang].send;
+    }
+
     // --- UI HELPERS ---
     function addLine(who, text) {
       const chat = document.getElementById("chat");
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message");
-      msgDiv.classList.add(who === "You" ? "user-message" : "hr-message");
+      // Use logic to assign class regardless of translated "You" or "Ty"
+      msgDiv.classList.add(who === translations.en.you || who === translations.pl.you ? "user-message" : "hr-message");
       msgDiv.innerText = text;
       chat.appendChild(msgDiv);
       chat.scrollTop = chat.scrollHeight;
     }
 
     // --- CHAT LOGIC ---
-    // Modified to accept optional quickText parameter from the buttons
+    function sendQuickMessage(questionKey) {
+      sendMessage(translations[currentLang][questionKey]);
+    }
+
     async function sendMessage(quickText = null) {
       const input = document.getElementById("input");
       const button = document.getElementById("send-btn");
       const typingInfo = document.getElementById("typing");
       
-      // If a quickText was provided (from a button click), use that. Otherwise, read the input box.
       const message = quickText ? quickText : input.value.trim();
       
       if (!message) return;
@@ -453,7 +530,8 @@
       input.value = "";
       input.disabled = true;
       button.disabled = true;
-      addLine("You", message);
+      
+      addLine(translations[currentLang].you, message);
       typingInfo.style.display = "block";
       
       const chat = document.getElementById("chat");
@@ -468,10 +546,10 @@
 
         const data = await res.json();
         typingInfo.style.display = "none";
-        addLine("HR", data.reply);
+        addLine(translations[currentLang].hr, data.reply);
       } catch (error) {
         typingInfo.style.display = "none";
-        addLine("HR", "Sorry, I am having trouble connecting to the server. Please try again in a moment.");
+        addLine(translations[currentLang].hr, translations[currentLang].error);
       } finally {
         input.disabled = false;
         button.disabled = false;
@@ -551,7 +629,6 @@
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
         let directionX = (Math.random() * 1) - 0.5;
         let directionY = (Math.random() * 1) - 0.5;
-        // Dark slate color for particles to match theme
         let color = '#334155'; 
         particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
       }
@@ -565,7 +642,6 @@
           
           if (distance < (canvas.width/7) * (canvas.height/7)) {
             let opacityValue = 1 - (distance/20000);
-            // Subtle gray connecting lines
             ctx.strokeStyle = 'rgba(51, 65, 85,' + opacityValue + ')';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -575,14 +651,13 @@
           }
         }
         
-        // Mouse interaction lines
         if (mouse.x != undefined && mouse.y != undefined) {
           let dx = mouse.x - particlesArray[a].x;
           let dy = mouse.y - particlesArray[a].y;
           let mouseDistance = dx * dx + dy * dy;
           if (mouseDistance < mouse.radius * mouse.radius) {
              let mouseOpacity = 1 - (mouseDistance / (mouse.radius * mouse.radius));
-             ctx.strokeStyle = 'rgba(99, 102, 241,' + mouseOpacity + ')'; // Indigo interaction lines
+             ctx.strokeStyle = 'rgba(99, 102, 241,' + mouseOpacity + ')';
              ctx.lineWidth = 1.5;
              ctx.beginPath();
              ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -593,7 +668,6 @@
       }
     }
 
-    // Animation Loop
     function animate() {
       requestAnimationFrame(animate);
       ctx.clearRect(0, 0, innerWidth, innerHeight);
