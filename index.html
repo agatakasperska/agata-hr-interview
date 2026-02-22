@@ -198,18 +198,6 @@
       color: #ffffff;
     }
 
-    /* Danger Button (Restart) */
-    .nav-btn-danger {
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #ef4444;
-    }
-    
-    .nav-btn-danger:hover {
-      background-color: rgba(239, 68, 68, 0.1);
-      color: #f87171;
-      border-color: #ef4444;
-    }
-
     /* Language Toggle Button */
     .lang-btn {
       background-color: #6366f1;
@@ -302,9 +290,10 @@
       font-style: italic;
     }
 
+    /* Input Area */
     .input-area {
       display: flex;
-      gap: 15px;
+      gap: 12px;
       align-items: center;
     }
 
@@ -364,6 +353,23 @@
       transform: none;
     }
 
+    .restart-btn {
+      background-color: transparent;
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 30px;
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .restart-btn:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+    }
+
     @media (max-width: 850px) {
       .app-container {
         flex-direction: column;
@@ -381,7 +387,15 @@
       }
       .header-right {
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-end;
+      }
+      .input-area {
+        flex-wrap: wrap;
+      }
+      .input-wrapper {
+        order: -1;
+        width: 100%;
+        flex: none;
       }
     }
   </style>
@@ -423,13 +437,12 @@
         
         <div class="header-middle">
           <a href="#" class="nav-btn" id="txt-works">My Works</a>
-          <a href="Agata_Kasperska_CV.pdf" download class="nav-btn" id="txt-cv">Download CV</a>
+          <a href="0001xyz.pdf" download class="nav-btn" id="txt-cv">Download CV</a>
           <a href="https://www.linkedin.com/in/agata-kasperska-38374b2a8/" target="_blank" rel="noopener noreferrer" class="nav-btn">LinkedIn</a>
           <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">PL</button>
         </div>
 
         <div class="header-right">
-          <button class="nav-btn nav-btn-danger" onclick="restartChat()" id="txt-restart">Restart</button>
           <div class="wait-pill">
              <span style="font-size: 12px;">⏳</span> <span id="txt-wait">Wait ~30s for reply</span>
           </div>
@@ -443,6 +456,8 @@
       <div class="typing-indicator" id="typing">typing...</div>
 
       <div class="input-area">
+        <button class="restart-btn" id="txt-restart" onclick="restartChat()">Restart</button>
+        
         <div class="input-wrapper">
           <input id="input" type="text" placeholder="Ask a question... (Why are you interested in this job?, etc.)" autocomplete="off" />
         </div>
@@ -527,29 +542,23 @@
       document.getElementById("input").placeholder = translations[currentLang].placeholder;
       document.getElementById("txt-send").innerText = translations[currentLang].send;
       
-      // Update welcome message only if it's the only message in the chat
       const chat = document.getElementById("chat");
       if (chat.children.length === 1) {
         chat.children[0].innerText = translations[currentLang].welcome;
       }
     }
 
-    // --- RESTART CHAT LOGIC ---
     function restartChat() {
       const chat = document.getElementById("chat");
-      // Clear all HTML inside the chat window
       chat.innerHTML = ''; 
       
-      // Re-add the welcome message in the correct language
       const welcomeDiv = document.createElement("div");
       welcomeDiv.classList.add("message", "hr-message");
-      // Give it the ID back so language toggle continues to work if it's the only message
       welcomeDiv.id = "txt-welcome"; 
       welcomeDiv.innerText = translations[currentLang].welcome;
       chat.appendChild(welcomeDiv);
     }
 
-    // --- UI HELPERS ---
     function addLine(who, text) {
       const chat = document.getElementById("chat");
       const msgDiv = document.createElement("div");
@@ -560,7 +569,6 @@
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // --- CHAT LOGIC ---
     function sendQuickMessage(questionKey) {
       sendMessage(translations[currentLang][questionKey]);
     }
@@ -611,7 +619,6 @@
       }
     });
 
-    // --- CURSOR INTERACTIVE BACKGROUND LOGIC ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let particlesArray = [];
