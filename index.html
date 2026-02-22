@@ -198,6 +198,18 @@
       color: #ffffff;
     }
 
+    /* Danger Button (Restart) */
+    .nav-btn-danger {
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+    
+    .nav-btn-danger:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border-color: #ef4444;
+    }
+
     /* Language Toggle Button */
     .lang-btn {
       background-color: #6366f1;
@@ -213,6 +225,12 @@
     
     .lang-btn:hover {
       background-color: #4f46e5;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
     }
 
     .header-right .wait-pill {
@@ -361,6 +379,10 @@
         flex-direction: column;
         gap: 15px;
       }
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -401,11 +423,13 @@
         
         <div class="header-middle">
           <a href="#" class="nav-btn" id="txt-works">My Works</a>
+          <a href="Agata_Kasperska_CV.pdf" download class="nav-btn" id="txt-cv">Download CV</a>
           <a href="https://www.linkedin.com/in/agata-kasperska-38374b2a8/" target="_blank" rel="noopener noreferrer" class="nav-btn">LinkedIn</a>
           <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">PL</button>
         </div>
 
         <div class="header-right">
+          <button class="nav-btn nav-btn-danger" onclick="restartChat()" id="txt-restart">Restart</button>
           <div class="wait-pill">
              <span style="font-size: 12px;">⏳</span> <span id="txt-wait">Wait ~30s for reply</span>
           </div>
@@ -446,6 +470,8 @@
         title: "Ask HR Assistant",
         subtitle: "Type below or click a topic on the left.",
         works: "My Works",
+        cv: "Download CV",
+        restart: "Restart",
         wait: "Wait ~30s for reply",
         welcome: "Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.",
         typing: "typing...",
@@ -466,6 +492,8 @@
         title: "Asystent HR AI",
         subtitle: "Wpisz poniżej lub kliknij temat po lewej.",
         works: "Moje prace",
+        cv: "Pobierz CV",
+        restart: "Od nowa",
         wait: "Czekaj ~30s na odpowiedź",
         welcome: "Cześć! Jestem asystentem HR AI Agaty. Śmiało zadawaj mi pytania o jej kwalifikacje lub wybierz jedno z listy po lewej.",
         typing: "pisze...",
@@ -480,10 +508,8 @@
     function toggleLanguage() {
       currentLang = currentLang === 'en' ? 'pl' : 'en';
       
-      // Update toggle button text
       document.getElementById("lang-toggle").innerText = currentLang === 'en' ? 'PL' : 'EN';
       
-      // Update UI texts
       document.getElementById("txt-status").innerText = translations[currentLang].status;
       document.getElementById("txt-quick").innerText = translations[currentLang].quick;
       document.getElementById("btn-q1").innerText = translations[currentLang].q1;
@@ -494,11 +520,33 @@
       document.getElementById("txt-title").innerText = translations[currentLang].title;
       document.getElementById("txt-subtitle").innerText = translations[currentLang].subtitle;
       document.getElementById("txt-works").innerText = translations[currentLang].works;
+      document.getElementById("txt-cv").innerText = translations[currentLang].cv;
+      document.getElementById("txt-restart").innerText = translations[currentLang].restart;
       document.getElementById("txt-wait").innerText = translations[currentLang].wait;
-      document.getElementById("txt-welcome").innerText = translations[currentLang].welcome;
       document.getElementById("typing").innerText = translations[currentLang].typing;
       document.getElementById("input").placeholder = translations[currentLang].placeholder;
       document.getElementById("txt-send").innerText = translations[currentLang].send;
+      
+      // Update welcome message only if it's the only message in the chat
+      const chat = document.getElementById("chat");
+      if (chat.children.length === 1) {
+        chat.children[0].innerText = translations[currentLang].welcome;
+      }
+    }
+
+    // --- RESTART CHAT LOGIC ---
+    function restartChat() {
+      const chat = document.getElementById("chat");
+      // Clear all HTML inside the chat window
+      chat.innerHTML = ''; 
+      
+      // Re-add the welcome message in the correct language
+      const welcomeDiv = document.createElement("div");
+      welcomeDiv.classList.add("message", "hr-message");
+      // Give it the ID back so language toggle continues to work if it's the only message
+      welcomeDiv.id = "txt-welcome"; 
+      welcomeDiv.innerText = translations[currentLang].welcome;
+      chat.appendChild(welcomeDiv);
     }
 
     // --- UI HELPERS ---
@@ -506,7 +554,6 @@
       const chat = document.getElementById("chat");
       const msgDiv = document.createElement("div");
       msgDiv.classList.add("message");
-      // Use logic to assign class regardless of translated "You" or "Ty"
       msgDiv.classList.add(who === translations.en.you || who === translations.pl.you ? "user-message" : "hr-message");
       msgDiv.innerText = text;
       chat.appendChild(msgDiv);
