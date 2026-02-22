@@ -312,6 +312,24 @@
       border-color: #6366f1;
     }
 
+    /* ŞIK RESTART İKONU */
+    .input-icon-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px 0 0;
+      transition: color 0.2s, transform 0.3s ease;
+    }
+    
+    .input-icon-btn:hover {
+      color: #ef4444; /* Kırmızımsı vurgu */
+      transform: rotate(-45deg); /* Şık bir dönüş efekti */
+    }
+
     .input-wrapper input {
       width: 100%;
       background: transparent;
@@ -353,23 +371,6 @@
       transform: none;
     }
 
-    .restart-btn {
-      background-color: transparent;
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 30px;
-      padding: 14px 20px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .restart-btn:hover {
-      background-color: rgba(239, 68, 68, 0.1);
-      border-color: #ef4444;
-    }
-
     @media (max-width: 850px) {
       .app-container {
         flex-direction: column;
@@ -388,14 +389,6 @@
       .header-right {
         width: 100%;
         justify-content: flex-end;
-      }
-      .input-area {
-        flex-wrap: wrap;
-      }
-      .input-wrapper {
-        order: -1;
-        width: 100%;
-        flex: none;
       }
     }
   </style>
@@ -456,9 +449,14 @@
       <div class="typing-indicator" id="typing">typing...</div>
 
       <div class="input-area">
-        <button class="restart-btn" id="txt-restart" onclick="restartChat()">Restart</button>
-        
         <div class="input-wrapper">
+          <button class="input-icon-btn" onclick="restartChat()" title="Restart Chat" id="btn-restart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+          </button>
+          
           <input id="input" type="text" placeholder="Ask a question... (Why are you interested in this job?, etc.)" autocomplete="off" />
         </div>
         <button class="send-btn" id="send-btn" onclick="sendMessage()"><span id="txt-send">Send</span></button>
@@ -486,7 +484,7 @@
         subtitle: "Type below or click a topic on the left.",
         works: "My Works",
         cv: "Download CV",
-        restart: "Restart",
+        restart: "Restart Chat",
         wait: "Wait ~30s for reply",
         welcome: "Hello! I am Agata's AI HR Assistant. Feel free to ask me interview questions about her qualifications, or select one from the left.",
         typing: "typing...",
@@ -508,7 +506,7 @@
         subtitle: "Wpisz poniżej lub kliknij temat po lewej.",
         works: "Moje prace",
         cv: "Pobierz CV",
-        restart: "Od nowa",
+        restart: "Zacznij od nowa",
         wait: "Czekaj ~30s na odpowiedź",
         welcome: "Cześć! Jestem asystentem HR AI Agaty. Śmiało zadawaj mi pytania o jej kwalifikacje lub wybierz jedno z listy po lewej.",
         typing: "pisze...",
@@ -536,7 +534,7 @@
       document.getElementById("txt-subtitle").innerText = translations[currentLang].subtitle;
       document.getElementById("txt-works").innerText = translations[currentLang].works;
       document.getElementById("txt-cv").innerText = translations[currentLang].cv;
-      document.getElementById("txt-restart").innerText = translations[currentLang].restart;
+      document.getElementById("btn-restart").title = translations[currentLang].restart;
       document.getElementById("txt-wait").innerText = translations[currentLang].wait;
       document.getElementById("typing").innerText = translations[currentLang].typing;
       document.getElementById("input").placeholder = translations[currentLang].placeholder;
